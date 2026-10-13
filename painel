@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Auditoria SEO Local</title>
+<style>
+:root {
+  --bg: #f6f5f1;
+  --surface: #ffffff;
+  --surface-2: #efede6;
+  --text: #1c1b18;
+  --muted: #6b675d;
+  --border: #dedacd;
+  --accent: #1f5f4a;
+  --accent-text: #ffffff;
+  --crit: #b3261e;
+  --crit-bg: #fbe9e7;
+  --warn: #9a6200;
+  --warn-bg: #fdf1d8;
+  --ok: #1f6b3a;
+  --ok-bg: #e3f3e8;
+  --unk: #55606e;
+  --unk-bg: #e8ecf1;
+  --rational: #1d4f91;
+  --rational-bg: #e6eefa;
+  --emotional: #8a2d55;
+  --emotional-bg: #f9e8f0;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14130f;
+    --surface: #1d1c17;
+    --surface-2: #26241e;
+    --text: #efede6;
+    --muted: #a39f92;
+    --border: #3a372e;
+    --accent: #5fc4a1;
+    --accent-text: #0e1f19;
+    --crit: #ff8a80;
+    --crit-bg: #3a1f1c;
+    --warn: #f2c14e;
+    --warn-bg: #362b12;
+    --ok: #7fd49a;
+    --ok-bg: #16301f;
+    --unk: #a9b4c2;
+    --unk-bg: #232a33;
+    --rational: #8db8f2;
+    --rational-bg: #172438;
+    --emotional: #f0a2c3;
+    --emotional-bg: #391a29;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14130f; --surface: #1d1c17; --surface-2: #26241e; --text: #efede6;
+  --muted: #a39f92; --border: #3a372e; --accent: #5fc4a1; --accent-text: #0e1f19;
+  --crit: #ff8a80; --crit-bg: #3a1f1c; --warn: #f2c14e; --warn-bg: #362b12;
+  --ok: #7fd49a; --ok-bg: #16301f; --unk: #a9b4c2; --unk-bg: #232a33;
+  --rational: #8db8f2; --rational-bg: #172438; --emotional: #f0a2c3; --emotional-bg: #391a29;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 16px; line-height: 1.55;
+}
+.wrap { max-width: 920px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.2; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 12px; letter-spacing: .01em; }
+h3 { font-size: 1.02rem; margin: 0; }
+p { margin: 0 0 10px; }
+.muted { color: var(--muted); }
+.small { font-size: .88rem; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+.example-banner { background: var(--warn-bg); color: var(--warn); border: 1px solid var(--warn); border-radius: 10px; padding: 10px 14px; margin-bottom: 16px; font-size: .9rem; }
+.top { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline; justify-content: space-between; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 0; }
+.chip { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: .78rem; font-weight: 600; border: 1px solid transparent; }
+.chip.critico, .chip.alta, .chip.alto { background: var(--crit-bg); color: var(--crit); }
+.chip.atencao, .chip.media, .chip.medio { background: var(--warn-bg); color: var(--warn); }
+.chip.ok, .chip.baixa, .chip.baixo { background: var(--ok-bg); color: var(--ok); }
+.chip.nao_verificado, .chip.inferido { background: var(--unk-bg); color: var(--unk); }
+.chip.verificado { background: var(--ok-bg); color: var(--ok); }
+.hook { border-left: 4px solid var(--accent); background: var(--surface-2); padding: 12px 14px; border-radius: 0 10px 10px 0; margin: 14px 0 0; }
+.hook b { display: block; font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 4px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+.block .head { display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; margin-bottom: 6px; }
+.block p { margin: 0; font-size: .92rem; }
+.block .src { margin-top: 6px; word-break: break-word; }
+.finding-head { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.finding .label { font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 10px 0 2px; display: block; }
+.toggles { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+button { font: inherit; cursor: pointer; }
+.tbtn { border: 1px solid var(--border); background: var(--surface); color: var(--text); padding: 8px 14px; border-radius: 10px; font-size: .92rem; font-weight: 600; min-height: 40px; }
+.tbtn[aria-pressed="true"].rational { background: var(--rational-bg); color: var(--rational); border-color: var(--rational); }
+.tbtn[aria-pressed="true"].emotional { background: var(--emotional-bg); color: var(--emotional); border-color: var(--emotional); }
+.tbtn[aria-pressed="true"].perguntas { background: var(--surface-2); border-color: var(--accent); color: var(--accent); }
+.tbtn:focus-visible, .copy:focus-visible, .theme:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.panel { display: none; margin-top: 12px; padding: 14px; border-radius: 10px; white-space: pre-line; }
+.panel.show { display: block; }
+.panel.rational { background: var(--rational-bg); border: 1px solid var(--rational); }
+.panel.emotional { background: var(--emotional-bg); border: 1px solid var(--emotional); }
+.panel.perguntas { background: var(--surface-2); border: 1px solid var(--border); white-space: normal; }
+.panel .ptitle { font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; font-weight: 700; margin-bottom: 6px; display: block; }
+.panel.rational .ptitle { color: var(--rational); }
+.panel.emotional .ptitle { color: var(--emotional); }
+ul.q { margin: 4px 0 10px; padding-left: 20px; }
+ul.q li { margin-bottom: 4px; }
+ol.q { margin: 4px 0 10px; padding-left: 22px; }
+ol.q li { margin-bottom: 6px; }
+.tag-open, .tag-closed { display: inline-block; font-size: .7rem; font-weight: 700; padding: 1px 8px; border-radius: 999px; margin-bottom: 4px; }
+.tag-open { background: var(--ok-bg); color: var(--ok); }
+.tag-closed { background: var(--unk-bg); color: var(--unk); }
+.cost { font-size: 1.4rem; font-weight: 700; margin: 4px 0 8px; }
+.obj { margin-bottom: 10px; }
+.obj .o { font-weight: 600; }
+.script-box { white-space: pre-line; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin: 8px 0 8px; }
+.copy { border: 1px solid var(--border); background: var(--surface); color: var(--text); border-radius: 8px; padding: 6px 12px; font-size: .85rem; font-weight: 600; min-height: 36px; }
+.theme { position: fixed; top: 10px; right: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text); border-radius: 999px; padding: 6px 12px; font-size: .8rem; z-index: 5; }
+.empty { color: var(--muted); font-style: italic; }
+</style>
+</head>
+<body>
+<button class="theme" id="themeBtn" type="button" aria-label="Alternar tema claro e escuro">Tema</button>
+<div class="wrap" id="app"></div>
+
+<script>
+/* ===== DADOS DA ANÁLISE: substituir apenas este objeto a cada auditoria ===== */
+const DATA = {
+  "exemplo": true,
+  "empresa": {"nome": "Clínica Exemplo Odontologia", "url": "https://www.exemplo.com.br", "cidade": "Cidade Exemplo - PR", "segmento": "Clínica odontológica", "data_analise": "2026-10-13"},
+  "resumo": {
+    "nivel_oportunidade": "alto",
+    "veredito": "Site bonito, mas invisível para quem procura o serviço na cidade. O perfil no Google está incompleto e o concorrente que aparece primeiro tem páginas dedicadas por tratamento.",
+    "frase_abertura": "Fiz a busca 'dentista implante Cidade Exemplo' e a clínica de vocês não aparece na primeira página; aparecem três concorrentes antes.",
+    "suposicoes": ["Dados de exemplo, fictícios, apenas para mostrar o layout.", "Ticket médio e taxa de fechamento supostos para ilustrar a conta."]
+  },
+  "blocos": [
+    {"id": "b1", "titulo": "Visibilidade nas buscas", "status": "critico", "evidencia": "Em 4 buscas por serviço + cidade, a clínica não apareceu na primeira página.", "fonte": "Busca no Google, 13/10/2026"},
+    {"id": "b2", "titulo": "Google Meu Negócio", "status": "atencao", "evidencia": "Perfil existe, 11 avaliações (nota 4,8), sem fotos recentes, sem respostas às avaliações.", "fonte": "Perfil público no Google"},
+    {"id": "b3", "titulo": "NAP consistente", "status": "atencao", "evidencia": "Telefone do site difere do telefone no Google.", "fonte": "Rodapé do site vs. perfil"},
+    {"id": "b4", "titulo": "Estrutura para intenção local", "status": "critico", "evidencia": "Uma única página 'Serviços' lista tudo; não há página por tratamento nem por cidade atendida.", "fonte": "/servicos"},
+    {"id": "b5", "titulo": "Sinais técnicos no HTML", "status": "atencao", "evidencia": "Title igual em 5 páginas, sem schema LocalBusiness, sitemap presente.", "fonte": "HTML das páginas"},
+    {"id": "b6", "titulo": "Conversão", "status": "ok", "evidencia": "Botão de WhatsApp e telefone clicável no topo; formulário curto.", "fonte": "Home"},
+    {"id": "b7", "titulo": "Comparação com concorrentes", "status": "critico", "evidencia": "Concorrente A tem 9 páginas de tratamento e 140 avaliações; a clínica tem 1 página e 11.", "fonte": "Sites e perfis dos concorrentes"}
+  ],
+  "achados": [
+    {
+      "id": "a1", "bloco": "b1", "titulo": "Quem busca o serviço na cidade não encontra a clínica", "severidade": "alta", "confianca": "verificado",
+      "evidencia": "Nas buscas 'dentista Cidade Exemplo', 'implante dentário Cidade Exemplo', 'clareamento Cidade Exemplo' e 'ortodontia Cidade Exemplo', a clínica não aparece na primeira página. Aparecem 3 concorrentes no mapa.",
+      "impacto_negocio": "Quem decide procurar um dentista quase sempre escolhe entre os primeiros resultados. Quem não aparece não entra na lista.",
+      "argumento_racional": "Hoje o paciente que busca implante na cidade vê três clínicas antes da sua. Se cada implante fecha em torno de R$ 3.000 e apenas um paciente a mais por mês escolher a clínica, são R$ 36.000 por ano que hoje vão para o concorrente. A correção não exige mais investimento em anúncio: exige que a clínica seja encontrada.",
+      "argumento_emocional": "Vocês construíram uma clínica com nota 4,8 dos pacientes. Dá para sentir o que é ver outra clínica, com nota pior, aparecer primeiro simplesmente porque o Google entende melhor o site dela. O trabalho bom de vocês merece ser encontrado por quem está procurando.",
+      "perguntas_abertas": ["Como um paciente novo chega até vocês hoje?", "Já pesquisou no Google como o seu paciente procura por implante?", "O que mudaria na clínica se a agenda de avaliações enchesse todo mês?"],
+      "perguntas_fechadas": ["Posso te mostrar na tela, agora, o que aparece quando eu busco 'implante dentário Cidade Exemplo'?", "A maior parte dos seus pacientes vem por indicação hoje, correto?"]
+    },
+    {
+      "id": "a2", "bloco": "b4", "titulo": "Uma página só para todos os tratamentos", "severidade": "alta", "confianca": "verificado",
+      "evidencia": "O site tem uma página de serviços com lista curta. O concorrente A tem uma página por tratamento com texto, perguntas frequentes e a cidade citada.",
+      "impacto_negocio": "O Google mostra a página que melhor responde à busca. Sem página dedicada, a clínica não concorre por implante, ortodontia ou clareamento.",
+      "argumento_racional": "O concorrente A disputa nove buscas diferentes com nove páginas. A clínica disputa uma, genérica. Criar as páginas dos tratamentos de maior ticket é o caminho mais direto para entrar nessas disputas.",
+      "argumento_emocional": "Cada tratamento que vocês fazem bem hoje não tem uma porta de entrada no site. É como ter uma sala excelente sem placa na rua.",
+      "perguntas_abertas": ["Quais tratamentos são os mais rentáveis para vocês hoje?", "Quais vocês gostariam de fazer mais?"],
+      "perguntas_fechadas": ["Implante e ortodontia estão entre os de maior ticket, certo?"]
+    }
+  ],
+  "pontos_fortes": ["Nota 4,8 no Google com avaliações reais.", "WhatsApp e telefone clicáveis logo no topo da home.", "Site com identidade visual profissional."],
+  "custo_inacao": {
+    "faixa": "R$ 2.000 a R$ 6.000 por mês (ilustrativo)",
+    "premissas": ["1 a 2 pacientes por mês deixam de chegar por não aparecerem na busca local", "Ticket médio suposto de R$ 3.000 por tratamento", "Taxa de fechamento suposta de 50% sobre avaliações"],
+    "observacao": "Estimativa, não promessa. Confirmar ticket e taxa de fechamento com o cliente na conversa."
+  },
+  "perguntas_qualificacao": [
+    "Me conta como a clínica cresceu até aqui. De onde vieram os pacientes dos últimos meses?",
+    "Qual o tratamento que mais dá retorno para vocês hoje?",
+    "Já investiram em Google, Instagram ou site? O que funcionou e o que não funcionou?",
+    "Quantas avaliações novas por mês vocês conseguem atender sem sobrecarregar a agenda?",
+    "Quem participa da decisão quando vocês contratam um serviço como esse?",
+    "Se em seis meses a clínica estivesse entre as três do mapa, o que isso representaria para vocês?"
+  ],
+  "perguntas_fechamento": [
+    "Faz sentido para você o que acabamos de ver?",
+    "De tudo isso, o que pesa mais para você: aparecer no mapa ou ter páginas por tratamento?",
+    "Se a clínica aparecesse entre as três primeiras em 90 dias, o que mudaria para vocês?",
+    "O que te impediria de começar este mês?",
+    "Prefere que a gente comece pelo perfil do Google ou pelas páginas dos tratamentos?",
+    "Posso te enviar a proposta hoje e a gente ajusta junto na quinta?"
+  ],
+  "objecoes": [
+    {"objecao": "Meu movimento vem por indicação, não preciso de Google.", "resposta": "A indicação é ótima e continua. O que o Google faz é checar a indicação: o paciente indicado pesquisa a clínica antes de ligar. Hoje, ao pesquisar, ele vê um perfil sem fotos recentes e três concorrentes antes da clínica."},
+    {"objecao": "SEO demora.", "resposta": "Demora mesmo, e é melhor dizer isso logo. Por isso começamos pelo que se mexe mais rápido: o perfil no Google e o telefone divergente. Depois vêm as páginas por tratamento, com acompanhamento mensal."},
+    {"objecao": "Estou sem caixa agora.", "resposta": "Entendo. Posso montar um começo mais enxuto, só com o perfil e a correção do telefone, para você ver resultado antes de decidir o resto?"}
+  ],
+  "script": {
+    "whatsapp": "Olá, [Nome]! Aqui é o Cezar, da Off Digital. Pesquisei 'implante dentário Cidade Exemplo' no Google e não encontrei a Clínica Exemplo na primeira página, enquanto três concorrentes aparecem. Vi que a nota de vocês é 4,8, melhor que a deles. Posso te mostrar em 10 minutos o que está impedindo a clínica de aparecer?",
+    "ligacao": "Abertura: 'Oi [Nome], aqui é o Cezar, da Off Digital, aqui do Paraná. Prometo ser rápido. Pesquisei a clínica no Google e encontrei uma coisa que acho que vale você ver.'\nPrimeira pergunta: 'Como os pacientes novos chegam até vocês hoje?'"
+  },
+  "nao_verificado": ["Velocidade de carregamento (Core Web Vitals).", "Número de buscas mensais exatas por termo.", "Dados internos do perfil no Google (visualizações, ligações)."]
+};
+/* ===== FIM DOS DADOS ===== */
+
+function esc(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+    return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c];
+  });
+}
+const LABELS = {
+  critico: "Crítico", atencao: "Atenção", ok: "OK", nao_verificado: "Não verificado",
+  alta: "Severidade alta", media: "Severidade média", baixa: "Severidade baixa",
+  alto: "Oportunidade alta", medio: "Oportunidade média", baixo: "Oportunidade baixa",
+  verificado: "Verificado", inferido: "Inferido"
+};
+function chip(kind) { return '<span class="chip ' + esc(kind) + '">' + esc(LABELS[kind] || kind) + '</span>'; }
+function list(items, cls, tag) {
+  if (!items || !items.length) return '<p class="empty">Nada registrado.</p>';
+  return '<' + tag + ' class="' + cls + '">' + items.map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</' + tag + '>';
+}
+
+function render() {
+  var d = DATA, e = d.empresa, r = d.resumo, h = '';
+  if (d.exemplo) h += '<div class="example-banner"><b>EXEMPLO.</b> Dados fictícios só para mostrar a interface. Nenhum número aqui representa uma empresa real.</div>';
+
+  h += '<div class="top"><div><h1>' + esc(e.nome) + '</h1><div class="muted small">' + esc(e.segmento) + ' · ' + esc(e.cidade) + ' · ' + esc(e.url) + '</div></div>' +
+       '<div class="muted small">Análise de ' + esc(e.data_analise) + '</div></div>';
+  h += '<div class="chips">' + chip(r.nivel_oportunidade) + '</div>';
+  h += '<div class="card" style="margin-top:14px"><p>' + esc(r.veredito) + '</p>' +
+       '<div class="hook"><b>Frase de abertura</b>' + esc(r.frase_abertura) + '</div>';
+  if (r.suposicoes && r.suposicoes.length) h += '<p class="muted small" style="margin-top:12px"><b>Suposições adotadas:</b> ' + r.suposicoes.map(esc).join(' · ') + '</p>';
+  h += '</div>';
+
+  h += '<h2>Mapa dos 7 blocos</h2><div class="grid">';
+  (d.blocos || []).forEach(function (b) {
+    h += '<div class="card block"><div class="head"><h3>' + esc(b.titulo) + '</h3>' + chip(b.status) + '</div>' +
+         '<p>' + esc(b.evidencia) + '</p><p class="muted small src">Fonte: ' + esc(b.fonte) + '</p></div>';
+  });
+  h += '</div>';
+
+  if (d.pontos_fortes && d.pontos_fortes.length) {
+    h += '<h2>O que já está bom (comece por aqui)</h2><div class="card">' + list(d.pontos_fortes, 'q', 'ul') + '</div>';
+  }
+
+  h += '<h2>Achados e argumentos</h2>';
+  (d.achados || []).forEach(function (a, i) {
+    h += '<div class="card finding" id="f' + i + '">' +
+      '<div class="finding-head"><h3>' + esc(a.titulo) + '</h3><div class="chips" style="margin:0">' + chip(a.severidade) + chip(a.confianca) + '</div></div>' +
+      '<span class="label">Evidência</span><p>' + esc(a.evidencia) + '</p>' +
+      '<span class="label">Impacto no negócio</span><p>' + esc(a.impacto_negocio) + '</p>' +
+      '<div class="toggles">' +
+        '<button type="button" class="tbtn rational" aria-pressed="false" data-f="' + i + '" data-p="rational">Argumento racional</button>' +
+        '<button type="button" class="tbtn emotional" aria-pressed="false" data-f="' + i + '" data-p="emotional">Argumento emocional</button>' +
+        '<button type="button" class="tbtn perguntas" aria-pressed="false" data-f="' + i + '" data-p="perguntas">Perguntas</button>' +
+      '</div>' +
+      '<div class="panel rational" id="p' + i + 'rational"><span class="ptitle">Racional</span>' + esc(a.argumento_racional) + '</div>' +
+      '<div class="panel emotional" id="p' + i + 'emotional"><span class="ptitle">Emocional</span>' + esc(a.argumento_emocional) + '</div>' +
+      '<div class="panel perguntas" id="p' + i + 'perguntas">' +
+        '<span class="tag-open">Abertas</span>' + list(a.perguntas_abertas, 'q', 'ul') +
+        '<span class="tag-closed">Fechadas</span>' + list(a.perguntas_fechadas, 'q', 'ul') +
+      '</div></div>';
+  });
+
+  h += '<h2>Perguntas de qualificação (antes de apresentar qualquer coisa)</h2><div class="card">' + list(d.perguntas_qualificacao, 'q', 'ol') + '</div>';
+
+  if (d.custo_inacao) {
+    h += '<h2>Custo da inação</h2><div class="card"><div class="cost">' + esc(d.custo_inacao.faixa) + '</div>' +
+         '<span class="label muted small">Premissas</span>' + list(d.custo_inacao.premissas, 'q', 'ul') +
+         '<p class="muted small">' + esc(d.custo_inacao.observacao) + '</p></div>';
+  }
+
+  h += '<h2>Perguntas de fechamento</h2><div class="card">' + list(d.perguntas_fechamento, 'q', 'ol') + '</div>';
+
+  h += '<h2>Objeções prováveis</h2><div class="card">';
+  (d.objecoes || []).forEach(function (o) {
+    h += '<div class="obj"><div class="o">“' + esc(o.objecao) + '”</div><div>' + esc(o.resposta) + '</div></div>';
+  });
+  if (!d.objecoes || !d.objecoes.length) h += '<p class="empty">Nada registrado.</p>';
+  h += '</div>';
+
+  h += '<h2>Script de abordagem</h2>';
+  [['WhatsApp', 'whatsapp'], ['Ligação', 'ligacao']].forEach(function (s) {
+    var t = d.script && d.script[s[1]];
+    if (!t) return;
+    h += '<div class="card"><h3>' + s[0] + '</h3><div class="script-box" id="s_' + s[1] + '">' + esc(t) + '</div>' +
+         '<button type="button" class="copy" data-copy="s_' + s[1] + '">Copiar</button></div>';
+  });
+
+  if (d.nao_verificado && d.nao_verificado.length) {
+    h += '<h2>Não verificado nesta análise</h2><div class="card">' + list(d.nao_verificado, 'q', 'ul') +
+         '<p class="muted small">Nenhum argumento acima usa esses itens.</p></div>';
+  }
+
+  document.getElementById('app').innerHTML = h;
+}
+
+document.addEventListener('click', function (ev) {
+  var t = ev.target.closest('button');
+  if (!t) return;
+  if (t.dataset.p) {
+    var panel = document.getElementById('p' + t.dataset.f + t.dataset.p);
+    var open = panel.classList.toggle('show');
+    t.setAttribute('aria-pressed', open ? 'true' : 'false');
+  } else if (t.dataset.copy) {
+    var txt = document.getElementById(t.dataset.copy).textContent;
+    var done = function () { t.textContent = 'Copiado'; setTimeout(function () { t.textContent = 'Copiar'; }, 1500); };
+    try {
+      navigator.clipboard.writeText(txt).then(done, function () { t.textContent = 'Selecione e copie manualmente'; });
+    } catch (err) { t.textContent = 'Selecione e copie manualmente'; }
+  } else if (t.id === 'themeBtn') {
+    var root = document.documentElement;
+    var cur = root.getAttribute('data-theme');
+    var dark = cur ? cur === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    root.setAttribute('data-theme', dark ? 'light' : 'dark');
+  }
+});
+
+render();
+</script>
+</body>
+</html>
